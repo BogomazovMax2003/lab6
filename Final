@@ -1,0 +1,165 @@
+#include <iostream>
+#include<vector>
+#include<map>
+#include<string>
+#include<algorithm>
+#include<fstream>
+#include<Windows.h>
+
+
+struct Disciplina {
+    std::map<std::string, int> zachet;
+};
+struct Student {
+    std::string people;
+    Disciplina resultat;
+};
+
+
+void sortirovka(std::vector<Student> &a) {
+    for (int i = 0; i < a.size(); i++) {
+        for (int j = 0; j < a.size() - 1; j++) {
+            if (a[j].people >= a[j + 1].people) {
+                std::swap(a[j], a[j + 1]);
+            }
+
+        }
+    }
+}
+
+auto print(std::vector<Student> &a) {
+    for (int i = 0; i < 3; i++) {
+        std::cout << a[i].people<< std::endl;
+    }
+}
+
+auto otlichnik(Student &a,int &k){
+        if ((a.resultat.zachet["Math"] == 5) && (a.resultat.zachet["Fizika"] == 5) && (a.resultat.zachet["TI"] == 5) && (a.resultat.zachet["English"] == 5)) {
+            std::cout << 1 << std::endl;
+            k++;
+        }
+        else {
+            std::cout << 0 << std::endl;
+        }
+}
+
+auto vFail(std::vector<Student> &a,std::string text,int& qwe, std::fstream  &file) {
+    for (int i = 0; i < 3; i++) {
+        text= a[i].people;
+        file << text << "\n";
+        qwe= a[i].resultat.zachet["English"];
+        file <<"English-"<< qwe << "\n";
+        qwe= a[i].resultat.zachet["Math"];
+        file <<"Math-"<< qwe << "\n";
+         qwe= a[i].resultat.zachet["Fizika"];
+        file << "Fizika-"<<qwe << "\n";
+        qwe= a[i].resultat.zachet["TI"];
+        file <<"TI-"<< qwe << "\n";
+        std::cout << std::endl;
+        
+    }
+}
+
+
+auto vFail2(std::vector<Student>& a, std::string text, const int& qwe, std::fstream& file) {
+    for (int i = 0; i < 3; i++) {
+        file.write(reinterpret_cast<char*>(&a[i].people), sizeof(a[i].people));
+        file.write(reinterpret_cast<char*>(&a[i].resultat.zachet["English"]), sizeof(a[i].resultat.zachet["English"]));
+        file.write(reinterpret_cast<char*>(&a[i].resultat.zachet["Math"]), sizeof(a[i].resultat.zachet["Math"]));
+        file.write(reinterpret_cast<char*>(&a[i].resultat.zachet["Fizika"]), sizeof(a[i].resultat.zachet["Fizika"]));
+        file.write(reinterpret_cast<char*>(&a[i].resultat.zachet["TI"]), sizeof(a[i].resultat.zachet["TI"]));
+    }
+}
+
+
+int main()
+{
+    std::vector<Student> v;
+    Student Kuznetcov;
+    Kuznetcov.people = "Kuznetcov Nikita Pavlovich";
+    Kuznetcov.resultat.zachet["English"] = 2;
+    Kuznetcov.resultat.zachet["Math"] = 4;
+    Kuznetcov.resultat.zachet["TI"] = 3;
+    Kuznetcov.resultat.zachet["Fizika"] = 4;
+    v.push_back(Kuznetcov);
+    Student Bogomazov;
+    Bogomazov.people = "Bogomazov Max Dmitrievich";
+    Bogomazov.resultat.zachet["English"] = 5;
+    Bogomazov.resultat.zachet["Math"] = 5;
+    Bogomazov.resultat.zachet["TI"] = 5;
+    Bogomazov.resultat.zachet["Fizika"] = 5;
+    v.push_back(Bogomazov);
+    Student Pavlyk;
+    Pavlyk.people = "Pavlyk Igor Petrovich";
+    Pavlyk.resultat.zachet["English"] = 3;
+    Pavlyk.resultat.zachet["Math"] = 4;
+    Pavlyk.resultat.zachet["TI"] = 4;
+    Pavlyk.resultat.zachet["Fizika"] = 3;
+    v.push_back(Pavlyk);
+   sortirovka(v);
+    print(v);
+    int n = 0;
+    otlichnik(Kuznetcov, n);
+    otlichnik(Bogomazov, n);
+    otlichnik(Pavlyk, n);
+    std::cout << n << std::endl;
+
+    setlocale(LC_ALL, "ru");
+    std::string myfile = "Myfile.txt";
+    std::fstream  fs;
+    fs.open(myfile, std::fstream::in | std::fstream::out | std::fstream::app);
+    if (!fs.is_open())
+    {
+        std::cout << "Ошибка" << std::endl;
+    }
+    else {
+        std::string text;
+        int vvod;
+        std::cout << "Файл открылся" << std::endl;
+        std::cout << "Введите 1 если хотите записать или 2 если хотите считать" << std::endl;
+        std::cin >> vvod;
+        std::cout << std::endl;
+        int z=0;
+        if (vvod == 1) {
+            vFail(v, text, z, fs);
+        }
+        if (vvod == 2) {
+            while (!fs.eof())
+            {
+                text = "";
+                fs >> text;
+                std::cout << text << std::endl;
+            }
+        }
+    }
+    fs.close();
+
+    std::string myfile2 = "Myfile2.txt";
+    std::fstream  fs2;
+    fs2.open(myfile2,(std::ios::binary | std::fstream::in | std::fstream::out | std::fstream::app));
+    if (!fs2.is_open())
+    {
+        std::cout << "Ошибка" << std::endl;
+    }
+    else {
+        std::string text2,line;
+        int vvod2;
+        std::cout << "Файл открылся" << std::endl;
+        std::cout << "Введите 1 если хотите записать или 2 если хотите считать" << std::endl;
+        std::cin >> vvod2;
+        std::cout << std::endl;
+        int z2 = 0;
+        if (vvod2 == 1) {
+            vFail2(v, text2, z2, fs2);
+        }
+        if (vvod2 == 2) {
+            while (!fs2.eof())
+            {
+                std::getline(fs2, line);
+                std::cout << line << std::endl;
+            }
+        }
+    }
+    fs2.close();
+    return 0;
+}
